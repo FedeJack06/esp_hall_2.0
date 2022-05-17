@@ -1,9 +1,9 @@
 int main (void) {
   init();
   pinMode(10, OUTPUT);
-  pinMode(A0, INPUT); //v gen
-  pinMode(A4, INPUT); // v hall
-  //Serial2.begin(9600); // pin 15 RX e 14 TX
+  pinMode(A0, INPUT); //v generata da arduino e misurata
+  pinMode(A4, INPUT); // v hall misurata in arrivo dalla sonda
+  Serial2.begin(9600); // pin 15 RX e 14 TX
   Serial.begin(9600);
 
   int f = 20; //numero di n misure in semiperiodo
@@ -11,22 +11,20 @@ int main (void) {
   float V_hall_high[f], V_hall_low[f];
   float dV_hall, dV_ard;
   float incremento_corrente = 0.1;
-  float I_max = 0.2;
+  float I_max = 1.2;
   delay(1000);
-  //Serial2.println("OP1 1");
+  Serial2.println("OP1 1");
   delay(1000);
-  //Serial2.println("I1 0");
+  Serial2.println("I1 0");
   delay(1000);
-  //Serial2.println("V1 30");
+  Serial2.println("V1 30");
   delay(1000);
-
-  delay(200);
   
   for(float I=0; I <= I_max ; I+= incremento_corrente){
     Serial.println("CORRENTE");
     Serial.println(I);
     
-    for(int M = 0; M <= 10 ; M += 1){ // M misure di un "periodo"
+    for(int M = 0; M <= 200 ; M += 1){ // M misure di un "periodo"
 
       for (int N = 0 ; N < f ; N += 1){ //N misure 5V
         digitalWrite(10, HIGH);
@@ -60,7 +58,7 @@ int main (void) {
     }
     delay(1000);
     String corrente = "I1 " + String(I);
-    //Serial2.println(corrente);
+    Serial2.println(corrente);
     delay(1000);
   }
   delay(100);
