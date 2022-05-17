@@ -171,9 +171,7 @@ while True:
 				#ROOT.gPad.Update()
 				#gSystem.ProcessEvents()
 			nn += 1
-
-			gr2.Print()
-
+			
 			ser.close()
 			break
 
