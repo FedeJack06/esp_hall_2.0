@@ -113,9 +113,6 @@ while True:
 			mediaVarduino_suN = np.mean(vArdArray)
 			devStdVard_suN = np.std(vArdArray)
 
-
-			#vArdArray_M = np.append(vArdArray_M, float(mediaVarduino_suN)) 
-
 	if stato == 2:
 		data = ser.readline().decode('utf-8').rstrip()
 		print (data)
