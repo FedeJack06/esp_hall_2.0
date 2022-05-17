@@ -55,13 +55,16 @@ l_m_s = l_m_calc.s
 l_m = ufloat( l_m_n , l_m_s )
 
 #APERTURA FILE 
-plot_rough = open("VhvsB+.dat" , "w")   
-#plot_rough = open("VhvsB-.dat" , "w") #se B negativo
+plot_rough = open("serial_output/VhvsB+.dat" , "w")   
+#plot_rough = open("serial_output/VhvsB-.dat" , "w") #se B negativo
 
 #GRAFICO B vs V_HALL PROGRESSIVO
 gr2 = 	ROOT.TGraphErrors()
 f2 = ROOT.TF1("f" ,"[0] + [1] * x + [2] * pow(x,2)")
 c2 = ROOT.TCanvas("c1", "canvas",1920 , 1080)
+gr2.SetTitle("B vs V hall")
+gr2.GetXaxis().SetTitle("Campo magnetico [T]")
+gr2.GetYaxis().SetTitle("V hall [V]")
 nn = 0 #counter punti
 
 #CICLO LETTURA E CALCOLI
@@ -88,8 +91,8 @@ while True:
 		h = ROOT.TH1D("isto", "up" , 20, 0, 5)
 	
 	#OPEN FILE
-	vArduino = open("vArduino"+ str(I) +".dat", "a")
-	vHall = open("vHall" + str(I) + ".dat", "a")
+	vArduino = open("serial_output/vArduino"+ str(I) +".dat", "a")
+	vHall = open("serial_output/vHall" + str(I) + ".dat", "a")
 
 	if data == "VARD":
 		stato = 1
@@ -126,7 +129,7 @@ while True:
 			c.cd()
 			h.Draw()
 			name_isto = "istoV_hall{}.jpg".format(I)
-			c.SaveAs(name_isto)
+			c.SaveAs("serial_output/" + name_isto)
 			V_hall_mean = h.GetMean()
 			V_hall_dev = h.GetStdDev()
 
@@ -151,7 +154,7 @@ while True:
 			c.cd()
 			h.Draw()
 			name_isto = "istoV_hall{}.jpg".format(I)
-			c.SaveAs(name_isto)
+			c.SaveAs("serial_output/" + name_isto)
 			V_hall_mean = h.GetMean() 
 			V_hall_dev = h.GetStdDev()
 
@@ -171,7 +174,7 @@ while True:
 				#ROOT.gPad.Update()
 				#gSystem.ProcessEvents()
 			nn += 1
-			
+
 			ser.close()
 			break
 
@@ -208,13 +211,10 @@ plot_rough.close()
 gr2.Fit("f")
 c2.Modified()
 c2.Update()
-c2.SaveAs("B_vs_Vhall.jpg")
+c2.SaveAs("serial_output/B_vs_Vhall.jpg")
 
 while True:
 	cccc =0
-
-
-
 
 '''
 plot1 = open("plotV_HvsB_schifo.dat" , "r")
