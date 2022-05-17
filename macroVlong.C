@@ -3,8 +3,8 @@
     double_t V , v , B , b , EV , ev , EB , eb;
     double V_hall , V_long;
     int i=0;
-    string fileName = "file_con_B+"
-    string filename = "file_con_B-"
+    string fileName = "VhvsB+.dat"
+    string filename = "VhvsB-.dat"
 
     ifstream input1(fileName);
     ifstream input2(filename);

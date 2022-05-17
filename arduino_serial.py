@@ -55,8 +55,8 @@ l_m_s = l_m_calc.s
 l_m = ufloat( l_m_n , l_m_s )
 
 #APERTURA FILE 
-#output = open("I vs Vhall.dat", "w")   #file con i Vhall mediato (sono M valori)
-plot_rough = open("plotV_HvsB_schifo.dat" , "w")   #schifo perche non c'è la correzione su B long e cose
+plot_rough = open("VhvsB+.dat" , "w")   
+#plot_rough = open("VhvsB-.dat" , "w") #se B negativo
 
 #GRAFICO B vs V_HALL PROGRESSIVO
 gr2 = 	ROOT.TGraphErrors()
@@ -64,48 +64,54 @@ f2 = ROOT.TF1("f" ,"[0] + [1] * x + [2] * pow(x,2)")
 c2 = ROOT.TCanvas("c1", "canvas",1920 , 1080)
 nn = 0 #counter punti
 
-
-
 #CICLO LETTURA E CALCOLI
 while True:
 	#### INPUT DATI DA ARDUINO
 	if stato == 0:
 		data = ser.readline().decode('utf-8').rstrip()
 		print (data)
+
 	if data == "CORRENTE" or stato == 3:
 		I = ser.readline().decode('utf-8').rstrip()
-		print ("corr " + I)
+		print ("CORR " + I)
+
+		#TORNA A LEGGERE SERIALE ALL'INIZIO
 		stato = 0
 
-		###CALCOLO CAMPO MAGNETICO NELL'ELETTROMAGNETE DALLA CORRENTE
-		B_rough = (N*float(I))*mu/(l_m+(mu/mu_0)*l_t)    #restituisce una cosa del tipo B +- eB
+		#B magnetico
+		B_rough = (N*float(I))*mu/(l_m+(mu/mu_0)*l_t)    
 		B = B_rough.n
-		eB = B_rough.s/np.sqrt(3)    #calcolo e statisticizzazione errore di B
+		eB = B_rough.s/np.sqrt(3)
 
-		c = ROOT.TCanvas("c", "tensione di hall grezza")
+		#RESET HISTO quando ricevo valore corrente
+		c = ROOT.TCanvas("c", "tensione di hall grezza",1920 , 1080)
 		h = ROOT.TH1D("isto", "up" , 20, 0, 5)
+	
+	#OPEN FILE
 	vArduino = open("vArduino"+ str(I) +".dat", "a")
 	vHall = open("vHall" + str(I) + ".dat", "a")
+
 	if data == "VARD":
 		stato = 1
+
 	if stato == 1:
 		data = ser.readline().decode('utf-8').rstrip() #12.6
 		print (data)
 
 		if data == "VHALL":
 			stato = 2
-		else:
+		else:                  #PASSO M VOLTE DA QUI --- LEGGO RIGA V ARDUINO
 			vArduino.write(data + "\n")
 			vArduino.close()
 			for word in data.split():
-				vArdArray = np.append(vArdArray, float(word))
+				vArdArray = np.append(vArdArray, float(word)) #N v arduino in array
 			
-			###CALCOLO LA MEDIA SULLA TENSIONE DI ARDUINO DI N VALORI MISURATI (SPERO)
-		
-			mediaVarduino_suN = np.mean(vArdArray)  #ancora non so bene cosa farci
+			##ALCOLO LA MEDIA SULLA TENSIONE DI ARDUINO DI N VALORI
+			mediaVarduino_suN = np.mean(vArdArray)
 			devStdVard_suN = np.std(vArdArray)
 
-			vArdArray_M = np.append(vArdArray_M, float(mediaVarduino_suN)) 
+
+			#vArdArray_M = np.append(vArdArray_M, float(mediaVarduino_suN)) 
 
 	if stato == 2:
 		data = ser.readline().decode('utf-8').rstrip()
@@ -114,9 +120,9 @@ while True:
 		if data == "CORRENTE":
 			stato = 3
 
-			print("Vh: " + str(mediaVhall_suN)+ "+/-" + str(devStdVh_suN))
+			#print("Vh: " + str(mediaVhall_suN)+ "+/-" + str(devStdVh_suN))
 			
-			#HISTOGRAMMI
+			#HISTOGRAMMI, ho M volte le medie di N valori nell'histogramma
 			c.cd()
 			h.Draw()
 			name_isto = "istoV_hall{}.jpg".format(I)
@@ -124,10 +130,10 @@ while True:
 			V_hall_mean = h.GetMean()
 			V_hall_dev = h.GetStdDev()
 
-			#SCRIVO I RISLUATI IN UN FILE DEL TIPO V_HALL B eV_HALL eB
-
+			#SCRIVO Vhall vs B
 			plot_rough.write(str(V_hall_mean) + " " + str(B) + " " + str(V_hall_dev) + " " + str(eB) +"\n")
 			
+			#inserisco punto in grafico Vhall vs B
 			gr2.SetPoint(nn, B, V_hall_mean)
 			gr2.SetPointError(nn, eB, V_hall_dev)
 			if nn==0:
@@ -139,21 +145,9 @@ while True:
 				#ROOT.gPad.Update()
 				#gSystem.ProcessEvents()
 			nn += 1
+
 		elif data == "BREAK":
-			mediaVarduino_suN = np.mean(vArdArray)
-			devStdVard_suN = np.std(vArdArray)
-
-			###FORSE è DA AGGIUNGERE ANCHE QUI UNA PARTE DI ISTOGRMMI ORA SONO FUSO E NON CAPISCO SE SERVE O NO 
-			###nel dubbio l ho aggiunto poi vedremo
-
-			vArdArray_M = np.append(vArdArray_M, float(mediaVarduino_suN)) #inutili come l merda ma non sono sicro che lo siano quindi li lascio
-
-			print("Vard: " + str(mediaVarduino_suN) + "+/-" + str(devStdVard_suN))
-			mediaVhall_suN = np.mean(vHallArray)
-			devStdVh_suN = np.std(vHallArray)
-
-			vHallArray_M = np.append(vHallArray_M, float(mediaVhall_suN)) 
-			#h.Fill(mediaVhall_suN)
+			#HISTOGRAMMI, ho M volte le medie di N valori nell'histogramma
 			c.cd()
 			h.Draw()
 			name_isto = "istoV_hall{}.jpg".format(I)
@@ -162,37 +156,44 @@ while True:
 			V_hall_dev = h.GetStdDev()
 
 			
+			#SCRIVO Vhall vs B
 			plot_rough.write(str(V_hall_mean) + " " + str(B) + " " + str(V_hall_dev) + " " + str(eB) +"\n")
-			print("Vh: " + str(mediaVhall_suN)+ "+/-" + str(devStdVh_suN))
-			#output.write(str(I) + " " + str(mediaVhall_suM) + " " + str(mediaVhall_suN) + "\n")
+			
+			#inserisco punto in grafico Vhall vs B
+			gr2.SetPoint(nn, B, V_hall_mean)
+			gr2.SetPointError(nn, eB, V_hall_dev)
+			if nn==0:
+				c2.cd()
+				gr2.Draw("AP")
+			else:
+				c2.Modified()
+				c2.Update()
+				#ROOT.gPad.Update()
+				#gSystem.ProcessEvents()
+			nn += 1
+
+			gr2.Print()
+
 			ser.close()
 			break
+
 		elif data == "VARD":
-			stato = 1
-		else:
+			stato = 1 #torno a leggere v Arduino
+		
+		else:     #PASSO M VOLTE DA QUI --- LEGGO RIGHA V HARD con n valori
 			vHall.write(data + "\n")
 			vHall.close()
 			for word in data.split():
-				vHallArray = np.append(vHallArray, float(word))
+				vHallArray = np.append(vHallArray, float(word)) #array con N valori
 
-			#CALCOLO LA MEDIA SU N VALORI MISURATI (SPERO)
+			#CALCOLO LA MEDIA SU N VALORI MISURATI
 			mediaVhall_suN = np.mean(vHallArray)
 			devStdVh = np.std(vHallArray)
 
-			vHallArray_M = np.append(vHallArray_M, float(mediaVhall_suN))   #inutili come l merda ma non sono sicro che lo siano quindi li lascio
-			print(mediaVhall_suN)
-			print("\n FIIIIIIIILLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
+			#aggiungo a hist la MEDIA di N valori
 			h.Fill(mediaVhall_suN)
 
-
-		
-			
-
-
 #CHIUSURA FILE
-
-#output.close()
-
 vHall.close()
 vArduino.close()
 plot_rough.close()
