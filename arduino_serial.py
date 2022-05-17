@@ -10,7 +10,6 @@ import uncertainties
 from uncertainties import ufloat
 import math
 
-
 #begin serial
 ser = serial.Serial('/dev/ttyACM0', 9600)
 time.sleep(1)
@@ -37,7 +36,6 @@ devStdVard_suM = 0
 devStdVh_suM = 0
 vArdArray_M = np.array([])
 vHallArray_M = np.array([])
-
 
 #COSTANTI PER IL CALCOLO DI B
 N = 1000    #numero di spire elettromagnete
@@ -120,8 +118,6 @@ while True:
 		if data == "CORRENTE":
 			stato = 3
 
-			#print("Vh: " + str(mediaVhall_suN)+ "+/-" + str(devStdVh_suN))
-			
 			#HISTOGRAMMI, ho M volte le medie di N valori nell'histogramma
 			c.cd()
 			h.Draw()
@@ -155,7 +151,6 @@ while True:
 			V_hall_mean = h.GetMean() 
 			V_hall_dev = h.GetStdDev()
 
-			
 			#SCRIVO Vhall vs B
 			plot_rough.write(str(V_hall_mean) + " " + str(B) + " " + str(V_hall_dev) + " " + str(eB) +"\n")
 			
@@ -211,64 +206,6 @@ c2.Update()
 c2.SaveAs("serial_output/B_vs_Vhall.jpg")
 
 while True:
-	cccc =0
-
-'''
-plot1 = open("plotV_HvsB_schifo.dat" , "r")
-line = []
-
-gr = 	ROOT.TGraphErrors()
-f = ROOT.TF1("f" ,"[0] + [1] * x + [2] * pow(x,2)")
-c1 = ROOT.TCanvas("c1", "canvas",1920 , 1080)
-#NUMERO DI RIGHE NEL FILE 
-
-with open("plotV_HvsB_schifo.dat", 'r') as fp:
-    num_lines = sum(1 for line in fp if line.rstrip())
-
-#AGGIUNGO PUNTI AL GRAFICO
-
-for l in range(0,num_lines):
-	line = (plot1.readline()).split()
-	line_float = [ float(x) for x in line]  
-	hall = line_float [0] 
-	b = line_float[1]
-	ehall = line_float[2]
-	eb = line_float[3]
-	gr.SetPoint(l, b , hall)
-	gr.SetPointError(l, eb , ehall)
-
-#DISEGNO
-c1.cd()
-gr.SetTitle("B vs V hall")
-gr.GetXaxis().SetTitle("Campo magnetico [T]")
-gr.GetYaxis().SetTitle("V hall [V]")
-gr.Draw("AP") 
-gr.Fit("f")
-c1.SaveAs("plot_raf.jpg")
-'''
-
-'''
-alla fine vogliamo trovarci un con un file del tipo:
-
-V_hall B eV_hall eB
-   .   .
-   .   .
-   .   .
-
-
-
-un istogrammi con V_hall_+ - V_hall_- /2 cosi da avere V_hall e uno con V_hall_+ + V_hall_- /2 
-cosi da avere V_long che dipenda da B^2
-
-con B = (N*I)*mu/(l_m+(mu/mu_0)*l_t) , l'errore di b lo calcoliamo con la propagazione
-degli errroi, V_hall viene furoi dall'istogramma e il suo errore lo calcoliamo con deviazione
-standard
-
-
-cosa ci facciamo dei valori di V_ard? li usiamo in quelche modo con i dati ricavati dalla
-caratterizzazione del generatore di corrente.
-
-'''
-
-
-
+	cccc = 0
+#programma rimane aperto, cosí rimangono aperti i grafici di root
+#Ctrl + C per chiudere il programma
