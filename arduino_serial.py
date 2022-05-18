@@ -38,7 +38,7 @@ vArdArray_M = np.array([])
 vHallArray_M = np.array([])
 
 #COSTANTI PER IL CALCOLO DI B
-N = 1000    #numero di spire elettromagnete
+N = 1400    #numero di spire elettromagnete
 mu = 1000
 mu_0 = 4*math.pi*10**(-7)
 l1 = ufloat(15e-2,1e-3)
@@ -47,14 +47,14 @@ l3 = ufloat(3e-2 , 1e-3)
 l4 = ufloat(3e-2 , 1e-3)
 l5 = ufloat(6e-2 , 1e-3)
 l_t = ufloat(7e-2 , 5e-5)
-l_m_calc = 3*l1 + 2*l2 - 5*l4 - l_t 
+l_m_calc = 3*l1 - 3*l4 + 0.5*l2 -l_t
 l_m_n = l_m_calc.n
 l_m_s = l_m_calc.s
 l_m = ufloat( l_m_n , l_m_s )
 
 #APERTURA FILE 
-plot_rough = open("serial_output/VhvsB+.dat" , "w")   
-#plot_rough = open("serial_output/VhvsB-.dat" , "w") #se B negativo
+#plot_rough = open("serial_output/VhvsB+.dat" , "w")   
+plot_rough = open("serial_output/VhvsB-.dat" , "w") #se B negativo
 
 #GRAFICO B vs V_HALL PROGRESSIVO
 gr2 = 	ROOT.TGraphErrors()
@@ -86,7 +86,7 @@ while True:
 
 		#RESET HISTO quando ricevo valore corrente
 		c = ROOT.TCanvas("c", "tensione di hall grezza",1920 , 1080)
-		h = ROOT.TH1D("isto", "up" , 20, 0, 5)
+		h = ROOT.TH1D("isto", "up" ,100, 0, 1.1)
 	
 	#OPEN FILE
 	vArduino = open("serial_output/vArduino"+ str(I) +".dat", "a")
