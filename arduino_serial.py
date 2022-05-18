@@ -53,8 +53,8 @@ l_m_s = l_m_calc.s
 l_m = ufloat( l_m_n , l_m_s )
 
 #APERTURA FILE 
-#plot_rough = open("serial_output/VhvsB+.dat" , "w")   
-plot_rough = open("serial_output/VhvsB-.dat" , "w") #se B negativo
+plot_rough = open("serial_output/VhvsB+.dat" , "w")   
+#plot_rough = open("serial_output/VhvsB-.dat" , "w") #se B negativo
 
 #GRAFICO B vs V_HALL PROGRESSIVO
 gr2 = 	ROOT.TGraphErrors()
@@ -80,7 +80,7 @@ while True:
 		stato = 0
 
 		#B magnetico
-		B_rough = (N*float(I))*mu/(l_m+(mu/mu_0)*l_t)    
+		B_rough = ((N*float(I))*mu/(l_m+(mu/mu_0)*l_t))*2    
 		B = B_rough.n
 		eB = B_rough.s/np.sqrt(3)
 
