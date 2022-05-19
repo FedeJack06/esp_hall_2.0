@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "hist.C": "cpp",
-        "macroVlong.C": "cpp"
+        "macroVlong.C": "cpp",
+        "lin.C": "cpp",
+        "lin2.C": "cpp"
     }
 }

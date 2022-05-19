@@ -14,9 +14,13 @@
     * che legge il file
     */
    
-  string fileName; 
-  cout<<"File Fit:"<<flush;
-  cin>>fileName;
+  string fileName = "gmodo.dat"; 
+
+
+
+
+  //cout<<"File Fit:"<<flush;
+  //cin>>fileName;
 
    /* controllo che il file esista e sia leggibile */
    ifstream inputfile(fileName); 

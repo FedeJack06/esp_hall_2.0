@@ -13,13 +13,13 @@
     * Altri formati possono essere trattati modificando la parte della macro
     * che legge il file
     */
-   
-  string fileName; 
-  cout<<"File Fit:"<<flush;
-  cin>>fileName;
+   string filename = "gen.dat";
+  string fileName = "gen_manipolato.dat"; 
+  //cout<<"File Fit:"<<flush;
+  //cin>>fileName;
 
    /* controllo che il file esista e sia leggibile */
-   ifstream inputfile(fileName); 
+   ifstream inputfile(filename); 
    if (!inputfile.good()) {  
       cout << "Impossibile leggere il file: " << fileName << endl;
       return;
