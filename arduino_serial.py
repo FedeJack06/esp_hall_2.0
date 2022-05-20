@@ -11,7 +11,7 @@ from uncertainties import ufloat
 import math
 
 #begin serial
-ser = serial.Serial('/dev/ttyACM0', 9600)
+ser = serial.Serial('/dev/tty.usbmodem14201', 9600)
 time.sleep(1)
 ser.close()
 time.sleep(1)
@@ -53,7 +53,7 @@ l_m_s = l_m_calc.s
 l_m = ufloat( l_m_n , l_m_s )
 
 #APERTURA FILE 
-plot_rough = open("serial_output/VhvsB+.dat" , "w")   
+plot_rough = open("serial_output/VhvsB+.dat" , "a")   
 #plot_rough = open("serial_output/VhvsB-.dat" , "w") #se B negativo
 
 #GRAFICO B vs V_HALL PROGRESSIVO
