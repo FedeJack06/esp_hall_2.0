@@ -35,7 +35,7 @@ dd = 1 #count divide canvas
 #GRAFICO B vs V_HALL PROGRESSIVO
 gr2 = ROOT.TGraphErrors()
 f2 = ROOT.TF1("f" ,"[0] + [1] * x + [2] * pow(x,2)")
-c2 = ROOT.TCanvas("c1", "canvas",1920 , 1080)
+#c2 = ROOT.TCanvas("c1", "canvas", 1920, 1080)
 gr2.SetTitle("B vs V hall")
 gr2.GetXaxis().SetTitle("Campo magnetico [T]")
 gr2.GetYaxis().SetTitle("V hall [V]")
@@ -69,13 +69,12 @@ for I in corr:
 
 	c.cd(dd)
 	dd += 1
-	print(dd)
-	h.Draw()
+
 	gaus = ROOT.TF1("gausss", "gaus")
 	h.Fit("gausss")
 	gStyle.SetOptFit()
-	name_isto = "istoV_hall{}.jpg".format(I)
-	c.SaveAs("output/" + name_isto)
+	h.DrawClone()
+
 	V_hall_mean = gaus.GetParameter("Mean")
 	V_hall_dev = gaus.GetParameter("Sigma")
 	#V_hall_mean = h.GetMean()
@@ -87,16 +86,17 @@ for I in corr:
 	#inserisco punto in grafico Vhall vs B
 	gr2.SetPoint(nn, B, V_hall_mean)
 	gr2.SetPointError(nn, eB, V_hall_dev)
+	'''
 	if nn==0:
 		c2.cd()
 		gr2.Draw("AP")
 	else:
 		c2.Modified()
 		c2.Update()
-		#ROOT.gPad.Update()
-		#gSystem.ProcessEvents()
+		ROOT.gPad.Update()
+		gSystem.ProcessEvents()
 	nn += 1
-
+	'''
 #CHIUSURA FILE
 plot_rough.close()
 
@@ -108,11 +108,12 @@ plot_rough.close()
 |_|  \___/ \___/ \__|
       
 """
-
+c.SaveAs("output/istoV_hall_{}.jpg".format(I))
+'''
 gr2.Fit("f")
 c2.Modified()
 c2.Update()
 c2.SaveAs("output/B_vs_Vhall.jpg")
-
+'''
 while True:
 	ccc = 0
