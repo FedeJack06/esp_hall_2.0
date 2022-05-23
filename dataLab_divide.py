@@ -25,8 +25,12 @@ l_m_s = l_m_calc.s
 l_m = ufloat( l_m_n , l_m_s )
 
 #APERTURA FILE 
-plot_rough = open("output+_150/VhvsB+.dat" , "w")   
+plot_rough = open("output/VhvsB+.dat" , "w")   
 #plot_rough = open("serial_output/VhvsB-.dat" , "w") #se B negativo
+
+c = ROOT.TCanvas("c", "tensione di hall grezza",3840 , 2160)
+c.Divide(3,4)
+dd = 1 #count divide canvas
 
 #GRAFICO B vs V_HALL PROGRESSIVO
 gr2 = ROOT.TGraphErrors()
@@ -41,7 +45,7 @@ nn = 0 #counter punti
 corr = ["0.00", "0.10", "0.20", "0.30", "0.40", "0.50", "0.60", "0.70", "0.80", "0.90", "1.00", "1.10"]
 for I in corr:
 	print("top")
-	vHallFile = open("serial_output+_150/vHall{}.dat".format(I), "r")
+	vHallFile = open("serial_output+_50/vHall{}.dat".format(I), "r")
 
 	#data = vHallFile.readline().decode('utf-8').rstrip()
 	#print (data)
@@ -54,8 +58,7 @@ for I in corr:
 	#RESET HISTO quando ricevo valore corrente
 	
 	h = ROOT.TH1D("Distribuzione V Hall", "V_H I_{}A".format(I) ,60 , 0, 0)
-	c = ROOT.TCanvas("c", "tensione di hall grezza",3840 , 2160)
-
+    
 	#PASSO M VOLTE DA QUI --- LEGGO RIGA V ARDUINO
 	for line in vHallFile:
 		for word in line.split():
@@ -64,13 +67,15 @@ for I in corr:
 				h.Fill(float(word))
 				#print(word)
 
-	c.cd()
+	c.cd(dd)
+	dd += 1
+	print(dd)
 	h.Draw()
 	gaus = ROOT.TF1("gausss", "gaus")
 	h.Fit("gausss")
 	gStyle.SetOptFit()
 	name_isto = "istoV_hall{}.jpg".format(I)
-	c.SaveAs("output+_150/" + name_isto)
+	c.SaveAs("output/" + name_isto)
 	V_hall_mean = gaus.GetParameter("Mean")
 	V_hall_dev = gaus.GetParameter("Sigma")
 	#V_hall_mean = h.GetMean()
@@ -107,7 +112,7 @@ plot_rough.close()
 gr2.Fit("f")
 c2.Modified()
 c2.Update()
-c2.SaveAs("output+_150/B_vs_Vhall.jpg")
+c2.SaveAs("output/B_vs_Vhall.jpg")
 
 while True:
 	ccc = 0
