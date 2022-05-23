@@ -30,7 +30,9 @@ l_m = ufloat( l_m_n , l_m_s )
 plot_rough = open("output/VhvsB+.dat" , "w")   
 #plot_rough = open("serial_output/VhvsB-.dat" , "w") #se B negativo
 
-
+c = ROOT.TCanvas("c", "tensione di hall grezza",3840 , 2160)
+c.Divide(3,4)
+dd = 1 #count divide canvas
 
 #GRAFICO B vs V_HALL PROGRESSIVO
 gr2 = ROOT.TGraphErrors()
@@ -45,7 +47,7 @@ nn = 0 #counter punti
 corr = ["0.00", "0.10", "0.20", "0.30", "0.40", "0.50", "0.60", "0.70", "0.80", "0.90", "1.00", "1.10"]
 for I in corr:
 	print("top")
-	vHallFile = open("serial_output+/vHall{}.dat".format(I), "r")
+	vHallFile = open("serial_output+_50/vHall{}.dat".format(I), "r")
 
 	#data = vHallFile.readline().decode('utf-8').rstrip()
 	#print (data)
@@ -56,8 +58,8 @@ for I in corr:
 	eB = B_rough.s/np.sqrt(3)
 
 	#RESET HISTO quando ricevo valore corrente
-	c = ROOT.TCanvas("c", "tensione di hall grezza",1920 , 1080)
-	h = ROOT.TH1D("isto", "up" ,20 , 0, 0)
+	
+	h = ROOT.TH1D("Distribuzione V Hall", "V_H I_{}A".format(I) ,60 , 0, 0)
     
 	#PASSO M VOLTE DA QUI --- LEGGO RIGA V ARDUINO
 	for line in vHallFile:
@@ -65,13 +67,19 @@ for I in corr:
 			#HISTOGRAMMI, ho M volte le medie di N valori nell'histogramma
 			if float(word) > 0.3:
 				h.Fill(float(word))
-				print(word)
-	c.cd()
+				#print(word)
+	c.cd(dd)
+	dd += 1
+	print(dd)
 	h.Draw()
+	gaus = ROOT.TF1("gausss", "gaus")
+	h.Fit("gausss")
 	name_isto = "istoV_hall{}.jpg".format(I)
 	c.SaveAs("output/" + name_isto)
-	V_hall_mean = h.GetMean()
-	V_hall_dev = h.GetStdDev()
+	V_hall_mean = gaus.GetParameter("Mean")
+	V_hall_dev = gaus.GetParameter("Sigma")
+	#V_hall_mean = h.GetMean()
+	#V_hall_dev = h.GetStdDev()
 
 	#SCRIVO Vhall vs B
 	plot_rough.write(str(V_hall_mean) + " " + str(B) + " " + str(V_hall_dev) + " " + str(eB) +"\n")
