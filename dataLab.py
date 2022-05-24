@@ -47,7 +47,7 @@ for I in corr:
 	#print (data)
 
 	#B magnetico
-	B_rough = ((N*float(I))*mu/(l_m+(mu/mu_0)*l_t))*2    
+	B_rough = ((N*float(I))*mu/(l_m+(mu/mu_0)*l_t))
 	B = B_rough.n
 	eB = B_rough.s/np.sqrt(3)
 
