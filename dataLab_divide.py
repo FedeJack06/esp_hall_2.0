@@ -70,8 +70,11 @@ for I in corr:
 	c.cd(dd)
 	dd += 1
 
-	gaus = ROOT.TF1("gausss", "gaus")
+	gaus = ROOT.TF1("gausss", "gaus(0)+pol0(3)")
+	gaus.SetParameter(1,0.7)
 	h.Fit("gausss")
+	gaus.Print()
+	
 	gStyle.SetOptFit()
 	h.DrawClone()
 
@@ -98,6 +101,7 @@ for I in corr:
 	nn += 1
 
 #CHIUSURA FILE
+
 plot_rough.close()
 
 """            
