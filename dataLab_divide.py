@@ -71,7 +71,9 @@ for I in corr:
 	dd += 1
 
 	gaus = ROOT.TF1("gausss", "gaus(0)+pol0(3)")
-	gaus.SetParameter(1,0.7)
+	gaus.SetParLimits(0, 20, 70)
+	gaus.SetParLimits(1, 0.6, 0.9)
+	gaus.SetParLimits(2, 0.003, 0.008)
 	h.Fit("gausss")
 	gaus.Print()
 	
