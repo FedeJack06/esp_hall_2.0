@@ -1,12 +1,8 @@
-from ast import While
-import string
-from tokenize import String
-from matplotlib.pyplot import plot
 import ROOT
 import numpy as np
 import uncertainties
-from uncertainties import ufloat
 import math
+from uncertainties import ufloat
 from ROOT import gStyle
 
 #COSTANTI PER IL CALCOLO DI B
@@ -25,17 +21,17 @@ l_m_s = l_m_calc.s
 l_m = ufloat( l_m_n , l_m_s )
 
 #APERTURA FILE 
-plot_rough = open("output/VhvsB+.dat" , "w")   
-#plot_rough = open("serial_output/VhvsB-.dat" , "w") #se B negativo
+#plot_rough = open("output/VhvsB+.dat" , "w")   
+plot_rough = open("output/VhvsB_150+.dat" , "w") #se B negativo
 
-c = ROOT.TCanvas("c", "tensione di hall grezza",3840 , 2160)
-c.Divide(3,4)
+c = ROOT.TCanvas("c", "Histogrammi V_Hall",1800, 5500)
+c.Divide(2,6)
 dd = 1 #count divide canvas
 
 #GRAFICO B vs V_HALL PROGRESSIVO
 gr2 = ROOT.TGraphErrors()
 f2 = ROOT.TF1("f" ,"[0] + [1] * x + [2] * pow(x,2)")
-c2 = ROOT.TCanvas("c1", "canvas", 1920, 1080)
+c2 = ROOT.TCanvas("c1", "BvsVhall", 1920, 1080)
 gr2.SetTitle("B vs V hall")
 gr2.GetXaxis().SetTitle("Campo magnetico [T]")
 gr2.GetYaxis().SetTitle("V hall [V]")
@@ -45,13 +41,9 @@ nn = 0 #counter punti
 corr = ["0.00", "0.10", "0.20", "0.30", "0.40", "0.50", "0.60", "0.70", "0.80", "0.90", "1.00", "1.10"]
 for I in corr:
 	print("top")
-	vHallFile = open("serial_output-_150/vHall{}.dat".format(I), "r")
-
-	#data = vHallFile.readline().decode('utf-8').rstrip()
-	#print (data)
+	vHallFile = open("serial_output+_150/vHall{}.dat".format(I), "r")
 
 	#B magnetico
-	
 	ei = float(I)*0.3/100 + 0.003
 	i = ufloat( float(I) , ei)
 	B_rough = (N*i*mu/(l_m+(mu/mu_0)*l_t))  
@@ -59,7 +51,6 @@ for I in corr:
 	eB = B_rough.s/np.sqrt(3)
 
 	#RESET HISTO quando ricevo valore corrente
-	
 	h = ROOT.TH1D("Distribuzione V Hall", "V_H I_{}A".format(I) ,60 , 0, 0)
     
 	#PASSO M VOLTE DA QUI --- LEGGO RIGA V ARDUINO
@@ -73,10 +64,10 @@ for I in corr:
 	c.cd(dd)
 	dd += 1
 
-	gaus = ROOT.TF1("gausss", "gaus(0)+pol0(3)")
-	gaus.SetParLimits(0, 20, 70)
-	gaus.SetParLimits(1, 0.6, 0.9)
-	gaus.SetParLimits(2, 0.003, 0.008)
+	gaus = ROOT.TF1("gausss", "gaus") #+pol0(3)
+	#gaus.SetParLimits(0, 20, 70)
+	#gaus.SetParLimits(1, 0.6, 0.9)
+	#gaus.SetParLimits(2, 0.003, 0.008)
 	h.Fit("gausss")
 	gaus.Print()
 	
@@ -117,12 +108,12 @@ plot_rough.close()
 |_|  \___/ \___/ \__|
       
 """
-c.SaveAs("output/istoV_hall_{}.jpg".format(I))
+c.SaveAs("output/istoV_hall_150+.png")
 
 gr2.Fit("f")
 c2.Modified()
 c2.Update()
-c2.SaveAs("output/B_vs_Vhall.jpg")
+c2.SaveAs("output/B_vs_Vhall_150+.png")
 
 while True:
 	ccc = 0
