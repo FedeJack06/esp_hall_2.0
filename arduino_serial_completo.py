@@ -1,9 +1,10 @@
 import ROOT
-import numpy as np
 import uncertainties
 import math
 from uncertainties import ufloat
 from ROOT import gStyle
+import serial
+import time
 
 #begin serial
 ser = serial.Serial('/dev/tty.usbmodem14201', 9600)
@@ -15,22 +16,6 @@ ser.open()
 ## PREOCESSING
 I = 0
 stato = 0
-
-#MEDIA SU N MSIURE
-mediaVarduino_suN = 0
-mediaVhall_suN = 0
-devStdVard_suN = 0
-devStdVh_suN = 0
-vArdArray = np.array([])
-vHallArray = np.array([])
-
-#MEDIA SU M MISURE DI N MISURE (PRENDIAMO I VALORI MEDI DI N MISURE E LI METTIAMO IN UN ISTOGRAMMA) SOLO PER V HALL
-mediaVarduino_suM = 0
-mediaVhall_suM = 0
-devStdVard_suM = 0
-devStdVh_suM = 0
-vArdArray_M = np.array([])
-vHallArray_M = np.array([])
 
 #COSTANTI PER IL CALCOLO DI B
 N = 1400    #numero di spire elettromagnete
@@ -103,11 +88,7 @@ while True:
 			vArduino.write(data + "\n")
 			vArduino.close()
 			for word in data.split():
-				vArdArray = np.append(vArdArray, float(word)) #N v arduino in array
-			
-			##ALCOLO LA MEDIA SULLA TENSIONE DI ARDUINO DI N VALORI
-			mediaVarduino_suN = np.mean(vArdArray)
-			devStdVard_suN = np.std(vArdArray)
+				h.Fill(float(word)) #N v arduino in histo
 
 	if stato == 2:
 		data = ser.readline().decode('utf-8').rstrip()
@@ -175,14 +156,7 @@ while True:
 			vHall.write(data + "\n")
 			vHall.close()
 			for word in data.split():
-				vHallArray = np.append(vHallArray, float(word)) #array con N valori
-
-			#CALCOLO LA MEDIA SU N VALORI MISURATI
-			mediaVhall_suN = np.mean(vHallArray)
-			devStdVh = np.std(vHallArray)
-
-			#aggiungo a hist la MEDIA di N valori
-			h.Fill(mediaVhall_suN)
+				h.Fill(float(word))
 
 #CHIUSURA FILE
 vHall.close()
