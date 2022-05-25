@@ -47,7 +47,7 @@ l3 = ufloat(3e-2 , 1e-3)
 l4 = ufloat(3e-2 , 1e-3)
 l5 = ufloat(6e-2 , 1e-3)
 l_t = ufloat(7e-2 , 5e-5)
-l_m_calc = 3*l1 - 3*l4 + 0.5*l2 -l_t
+l_m_calc = 2*l1 - 4*l4 + l2 - l_t
 l_m_n = l_m_calc.n
 l_m_s = l_m_calc.s
 l_m = ufloat( l_m_n , l_m_s )
@@ -80,7 +80,10 @@ while True:
 		stato = 0
 
 		#B magnetico
-		B_rough = ((N*float(I))*mu/(l_m+(mu/mu_0)*l_t))*2    
+
+		ei = float(I)*0.3/100 + 0.003
+		i = ufloat( float(I) , ei)
+		B_rough = (N*i*mu/(l_m+(mu/mu_0)*l_t))
 		B = B_rough.n
 		eB = B_rough.s/np.sqrt(3)
 
